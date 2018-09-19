@@ -3,8 +3,8 @@ begin simulation;
   time_stop    50000 ;
   solvertype   1 ;    (newmark)
   on_no_convergence continue ;
-  logfile ./log/yaw.log ;
-  animation ./anim/test_yaw.dat;
+  logfile ./log/CP_TSR.log ;
+  ;animation ./anim/test_yaw.dat;
   begin newmark;
     deltat    0.05;  
   end newmark;
@@ -322,18 +322,18 @@ begin type2_dll;
      arraysizes_init  100 1 ;
      arraysizes_update 100 100 ;
      begin init ;
-	   constant 1 46.3 ; Radius  
+	   constant 1 46.3 			 ; Radius  
 	   constant 2  0.256240E+06 ; Optimal K value for below rated region (constant 11 )
-	   constant 3 0.1			 ; 	  Minimum K value loop
-	   constant 4 10			 ;    Maximum K value
-	   constant 5 18				 ; size vector of K lenght(Kmin:Kmax)
-	   constant 6 -10 			 ; minimum pitch 
-	   constant 7 10 			 ; maximum pitch
-	   constant 8 15 			 ; length pitch array 
-	   constant 9 0.5e-4		     ; rtol
-	   constant 10 600			 ; length of moving average (t/dt)
-	   constant 11 3500		; time to exit if criteria is not fulfilled (t/dt)
-	   constant 12 1000 	    ; time minimum x step (in rtol is ok but convergence is found slow)
+	   constant 3 0.1			 ; Minimum K/Kopt value loop
+	   constant 4 10			 ; Maximum K/Kopt value
+	   constant 5 18			 ; length of K vector(Kmin:Kmax)
+	   constant 6 -10 			 ; minimum pitch [deg] 
+	   constant 7 10 			 ; maximum pitch [deg]
+	   constant 8 15 			 ; length of pitch vector 
+	   constant 9 5e-4		     ; convergence tolerance (smaller values = more precise)
+	   constant 10 200			 ; N, the number of past data points to consider (more points = more precise)
+	   constant 11 3500		     ; maximum timesteps before switching
+	   constant 12 100 	         ; N_ignore, time steps to ignore before after each switch. (higher = safer)
 	end init ;
 	 begin output;
         general time                          		;   Time [s]
@@ -414,13 +414,14 @@ begin type2_dll;
   ;
 end dll;
 begin output;
-  filename ./res_last/test_yaw8;
-  time 0 50000 ;
+  filename ./res/CP_TSR;
+  ;time 0 50000 ;
  data_format  hawc_ascii;
    buffer 1 ;
   general time ; 
    aero omega ;
   dll type2_dll basic_controller inpvec 1 ;
+  dll type2_dll basic_controller inpvec 3 # asdf ;
   dll type2_dll generator_servo inpvec 1 ;
   dll type2_dll generator_servo inpvec 2 ;
   constraint bearing2 pitch1 5;    angle and angle velocity 

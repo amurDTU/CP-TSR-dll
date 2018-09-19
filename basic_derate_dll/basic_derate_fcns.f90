@@ -6,9 +6,12 @@ type basicdr
 integer :: strat , stepno
 real*8 :: dr, R
 real*8 :: arrayK(50), arraypitch(30)
-integer :: ct1 , ct2 , Ksize , Thetasize
+!real*8 :: omegas(50) 
+real*8, Dimension(:), allocatable :: omegas
+!TODO set size after initialisation (allocate memory later)
+integer :: ct1 , ct2 , Ksize , Thetasize, N
 real*8 :: Kmin , Kmax , Kopt , Thetamin, Thetamax
-real*8 :: errtol , movaverage , timeout , timein
+real*8 :: errtol , timeout , timein
 
 end type basicdr
 
@@ -19,6 +22,30 @@ type(basicdr) basicst
 !*****************************************************************************************
     contains
 !*****************************************************************************************
+function std(x, N)
+    ! returns the standard deviation of array x.
+    real(mk) :: std, mean
+    integer :: N
+    real(mk) x(N)
+
+    mean = sum(x)/N
+    std = (sum((x - mean)**2)/N)**(0.5)
+
+end function std
+
+function max_dev(x, N)
+    ! returns the maximum absolute deviation array x from its mean.
+    real(mk) :: max_dev, mean
+    integer :: N
+    real(mk) x(N)
+
+    mean = sum(x)/N
+    max_dev = maxval(abs((x - mean)))
+
+end function max_dev
+
+
+
 
 function average_error(stepno,sizemoving,val)
 
